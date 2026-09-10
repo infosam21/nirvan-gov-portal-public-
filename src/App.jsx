@@ -12,6 +12,7 @@ export default function App() {
   const [authError, setAuthError] = useState("");
 
   // Portal Navigation State
+  const [activeScreen, setActiveScreen] = useState("learner-dashboard");
   const [courses, setCourses] = useState([
     {
       id: 1,
@@ -129,7 +130,7 @@ export default function App() {
       ]);
     }
   }
-  
+
   const handleGeneratePlan = async () => {
     setLoadingPlan(true);
     try {
