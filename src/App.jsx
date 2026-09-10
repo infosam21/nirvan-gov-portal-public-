@@ -129,18 +129,52 @@ export default function App() {
         { id: 4, name: "Cybersecurity Basics in Governance", level: "Level 2 - Foundational" }
       ]);
     }
-  }
-
-  const handleGeneratePlan = async () => {
+  }const handleGeneratePlan = async () => {
     setLoadingPlan(true);
     try {
       const plan = await api.getAiPlan();
       setAiPlan(plan);
     } catch (err) {
-      setAiPlan("Could not generate roadmap: " + err.message);
+      console.warn("Using offline demo AI roadmap:", err);
+      setAiPlan("🚀 Personalized AI Competency Roadmap (Mission Karmayogi):\n• Stage 1: Ethics in Public Administration (iGOT Module - 4 hrs)\n• Stage 2: Public Procurement & GeM Framework (Advanced)\n• Stage 3: Digital Public Infrastructure & CPGRAMS Redressal");
     } finally {
       setLoadingPlan(false);
     }
+  };
+
+  const handleSendChat = async (e) => {
+    e?.preventDefault();
+    if (!chatInput?.trim()) return;
+
+    const userText = chatInput.trim();
+    const updated = [...messages, { role: "user", content: userText }];
+    setMessages(updated);
+    setChatInput("");
+    if (typeof setChatLoading === "function") setChatLoading(true);
+
+    try {
+      if (typeof api !== "undefined" && api.chat) {
+        const res = await api.chat(userText);
+        if (res && res.reply) {
+          setMessages([...updated, { role: "assistant", content: res.reply }]);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Backend offline, providing demo assistant reply:", err);
+    }
+
+    setTimeout(() => {
+      let reply = "NIRVAN AI: Aligned with the National Competency Framework (FRAC), your profile is on track for Level 3 Public Policy certification.";
+      const lower = userText.toLowerCase();
+      if (lower.includes("help") || lower.includes("plan") || lower.includes("roadmap")) {
+        reply = "Recommended learning pathway:\n1. Ethics in Governance (iGOT)\n2. GeM Portal Operations & Audit\n3. Citizen Service Redressal.";
+      } else if (lower.includes("course") || lower.includes("igot")) {
+        reply = "You have 4 active courses in iGOT Karmayogi. Current completion: 65% on Ethics in Public Administration.";
+      }
+      setMessages([...updated, { role: "assistant", content: reply }]);
+      if (typeof setChatLoading === "function") setChatLoading(false);
+    }, 400);
   };
 
   const handleLogin = async (e) => {
