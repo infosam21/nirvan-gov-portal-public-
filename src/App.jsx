@@ -12,9 +12,48 @@ export default function App() {
   const [authError, setAuthError] = useState("");
 
   // Portal Navigation State
-  const [activeScreen, setActiveScreen] = useState("learner-dashboard");
-  const [courses, setCourses] = useState([]);
-  const [skills, setSkills] = useState([]);
+  const [courses, setCourses] = useState([
+    {
+      id: 1,
+      title: "Ethics in Public Administration",
+      provider: "iGOT Karmayogi",
+      progress: 65,
+      duration: "4 Hours",
+      status: "In Progress"
+    },
+    {
+      id: 2,
+      title: "Digital Governance & Public Infrastructure",
+      provider: "MeitY / iGOT",
+      progress: 30,
+      duration: "6 Hours",
+      status: "In Progress"
+    },
+    {
+      id: 3,
+      title: "Public Finance Management & FRBM Act",
+      provider: "Dept of Expenditure",
+      progress: 100,
+      duration: "3 Hours",
+      status: "Completed"
+    },
+    {
+      id: 4,
+      title: "Citizen Services & Grievance Redressal (CPGRAMS)",
+      provider: "DARPG",
+      progress: 0,
+      duration: "5 Hours",
+      status: "Enrolled"
+    }
+  ]);
+
+  const [skills, setSkills] = useState([
+    { id: 1, name: "Public Policy Analysis", level: "Level 3 - Proficient" },
+    { id: 2, name: "GeM Portal Operations", level: "Level 4 - Advanced" },
+    { id: 3, name: "Right to Information (RTI) Handling", level: "Level 3 - Proficient" },
+    { id: 4, name: "Cybersecurity Basics in Governance", level: "Level 2 - Foundational" }
+  ]);
+
 
   // Active Interactive Course Player State
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -38,16 +77,59 @@ export default function App() {
   async function loadPortalData() {
     try {
       const courseRes = await api.getCourses();
-      setCourses(courseRes.courses || []);
+      if (courseRes?.courses?.length) {
+        setCourses(courseRes.courses);
+      }
       const skillRes = await api.getSkills();
-      setSkills(skillRes.skills || []);
+      if (skillRes?.skills?.length) {
+        setSkills(skillRes.skills);
+      }
     } catch (err) {
-      console.error(err);
+      console.warn("Backend offline, populating iGOT demo data:", err);
+      setCourses([
+        {
+          id: 1,
+          title: "Ethics in Public Administration",
+          provider: "iGOT Karmayogi",
+          progress: 65,
+          duration: "4 Hours",
+          status: "In Progress"
+        },
+        {
+          id: 2,
+          title: "Digital Governance & Public Infrastructure",
+          provider: "MeitY / iGOT",
+          progress: 30,
+          duration: "6 Hours",
+          status: "In Progress"
+        },
+        {
+          id: 3,
+          title: "Public Finance Management & FRBM Act",
+          provider: "Dept of Expenditure",
+          progress: 100,
+          duration: "3 Hours",
+          status: "Completed"
+        },
+        {
+          id: 4,
+          title: "Citizen Services & Grievance Redressal (CPGRAMS)",
+          provider: "DARPG",
+          progress: 15,
+          duration: "5 Hours",
+          status: "Enrolled"
+        }
+      ]);
+
+      setSkills([
+        { id: 1, name: "Public Policy Analysis", level: "Level 3 - Proficient" },
+        { id: 2, name: "GeM Portal Operations", level: "Level 4 - Advanced" },
+        { id: 3, name: "Right to Information (RTI) Handling", level: "Level 3 - Proficient" },
+        { id: 4, name: "Cybersecurity Basics in Governance", level: "Level 2 - Foundational" }
+      ]);
     }
   }
-
   
-
   const handleGeneratePlan = async () => {
     setLoadingPlan(true);
     try {
