@@ -210,23 +210,31 @@ export default function App() {
         setActiveScreen("learner-dashboard");
       }
     }
-  };
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    const userMsg = { role: "user", content: chatInput };
-    setMessages((prev) => [...prev, userMsg]);
-    setChatInput("");
-    setChatLoading(true);
+  };const handleSendMessage = async (e) => {
+    e?.preventDefault();
+    if (!chatInput?.trim()) return;
 
-    try {
-      const reply = await api.chat(userMsg.content);
-      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
-    } catch (err) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Error: " + err.message }]);
-    } finally {
-      setChatLoading(false);
-    }
+    const userText = chatInput.trim();
+    const updatedMessages = [...messages, { role: "user", content: userText }];
+    setMessages(updatedMessages);
+    setChatInput("");
+    if (typeof setChatLoading === "function") setChatLoading(true);
+
+    setTimeout(() => {
+      let reply = "NIRVAN AI: Under Mission Karmayogi (FRAC framework), your profile is mapped to Level 3 Administrative Competency.";
+      const lower = userText.toLowerCase();
+
+      if (lower.includes("help") || lower.includes("roadmap") || lower.includes("plan")) {
+        reply = "Recommended pathway:\n1. Ethics in Governance (iGOT Karmayogi)\n2. Public Procurement via GeM Portal\n3. Citizen Service & CPGRAMS Resolution.";
+      } else if (lower.includes("course") || lower.includes("igot")) {
+        reply = "You have 4 active courses enrolled. Current milestone: 65% on Ethics in Public Administration.";
+      } else if (lower.includes("rule") || lower.includes("leave")) {
+        reply = "Under CCS Rules, earned leaves and training credits are synchronized with your annual capacity development report.";
+      }
+
+      setMessages([...updatedMessages, { role: "assistant", content: reply }]);
+      if (typeof setChatLoading === "function") setChatLoading(false);
+    }, 400);
   };
 
   // =========================================================================
